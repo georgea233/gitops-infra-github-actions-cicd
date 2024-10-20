@@ -20,7 +20,7 @@ jobs:
 
       - name: Retrieve secret
         run: |
-          aws secretsmanager get-secret-value --secret-id arn:aws:secretsmanager:us-east-2:755317065494:secret:gitops-infra-github-actions-cicd-aws-credentials-lMjbbT --query SecretString --output text
+          aws secretsmanager get-secret-value --secret-id gitops-infra-github-actions-cicd-aws-credentials --query SecretString --output text
 
 
 
