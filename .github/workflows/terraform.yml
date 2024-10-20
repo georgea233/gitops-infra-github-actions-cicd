@@ -25,6 +25,11 @@ jobs:
         with:
           terraform_version: 1.6.0
 
+      - name: Terraform Init
+        run: |
+          terraform init
+        working-directory: ./terraform
+
       - name: Terraform Format
         run: |
           terraform fmt -check
