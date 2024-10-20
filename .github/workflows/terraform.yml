@@ -12,6 +12,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Print Environment Variables
+        run: env
+
+      - name: Check AWS CLI version
+        run: aws --version
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -20,11 +26,9 @@ jobs:
 
       - name: Retrieve secret
         run: |
-          aws secretsmanager get-secret-value --secret-id gitops-infra-github-actions-cicd-aws-credentials --query SecretString --output text
+          secret_value=$(aws secretsmanager get-secret-value --secret-id gitops-infra-github-actions-cicd-aws-credentials --query SecretString --output text)
+          echo "Secret Value: $secret_value"
 
-      - name: Debug AWS Credentials
-        run: |
-          aws sts get-caller-identity
 
 
 
