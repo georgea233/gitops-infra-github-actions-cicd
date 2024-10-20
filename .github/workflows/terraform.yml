@@ -20,11 +20,15 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
           aws-region: us-east-2
 
-      - name: Set Terraform Version
-        env:
-          TERRAFORM_VERSION: "5.47.0"  # Specify the desired Terraform version here
+      - name: Get Latest Terraform Version
+        id: get_version
         run: |
-          echo "TERRAFORM_VERSION=$TERRAFORM_VERSION" >> $GITHUB_ENV
+          VERSION=$(curl -s https://api.github.com/repos/hashicorp/terraform/releases/latest | grep 'tag_name' | cut -d '"' -f 4)
+          echo "TERRAFORM_VERSION=${VERSION#v}" >> $GITHUB_ENV  # Remove the 'v' prefix if present
+          echo "Using Terraform version ${{ env.TERRAFORM_VERSION }}"
+      
+      - name: Install Terraform
+        run: |
           curl -LO "https://releases.hashicorp.com/terraform/${{ env.TERRAFORM_VERSION }}/terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip"
           unzip terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip
           sudo mv terraform /usr/local/bin/
@@ -55,6 +59,7 @@ jobs:
         run: |
           terraform show
         working-directory: ./terraform
+
 
 
 
