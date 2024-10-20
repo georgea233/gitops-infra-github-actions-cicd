@@ -24,8 +24,9 @@ jobs:
         env:
           TERRAFORM_VERSION: "5.47.0"  # Specify the desired Terraform version here
         run: |
-          curl -LO "https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_$TERRAFORM_VERSION_linux_amd64.zip"
-          unzip terraform_$TERRAFORM_VERSION_linux_amd64.zip
+          echo "TERRAFORM_VERSION=$TERRAFORM_VERSION" >> $GITHUB_ENV
+          curl -LO "https://releases.hashicorp.com/terraform/${{ env.TERRAFORM_VERSION }}/terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip"
+          unzip terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip
           sudo mv terraform /usr/local/bin/
           terraform --version
 
@@ -54,6 +55,7 @@ jobs:
         run: |
           terraform show
         working-directory: ./terraform
+
 
 
 # name: Terraform CI/CD
