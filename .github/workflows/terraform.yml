@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:  # Allows manual triggering of the destroy job
 
 jobs:
   terraform:
@@ -56,6 +57,36 @@ jobs:
           terraform show
         working-directory: ./terraform
 
+  destroy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'  # Runs only on manual triggers
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+          aws-region: us-east-2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1.4.0
+        with:
+          terraform_version: 1.6.0
+
+      - name: Terraform Init
+        run: |
+          terraform init
+        working-directory: ./terraform
+
+      - name: Terraform Destroy
+        run: |
+          terraform destroy -auto-approve
+        working-directory: ./terraform
+
 
 
 
@@ -81,21 +112,15 @@ jobs:
 #           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
 #           aws-region: us-east-2
 
-#       - name: Install Terraform
-#         working-directory: ./terraform  # Ensure we're in the correct directory
-#         env:
-#           TERRAFORM_VERSION:  "5.47.0"  # Specify the desired Terraform version here
+#       - name: Set up Terraform
+#         uses: hashicorp/setup-terraform@v1.4.0
+#         with:
+#           terraform_version: 1.6.0
+
+#       - name: Terraform Init
 #         run: |
-#           curl -LO "https://releases.hashicorp.com/terraform/${{ env.TERRAFORM_VERSION }}/terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip"
-#           unzip -o terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip
-#           # Remove the old terraform binary if it exists
-#           if [ -f /usr/local/bin/terraform ]; then
-#             sudo rm /usr/local/bin/terraform
-#           elif [ -d /usr/local/bin/terraform ]; then
-#             sudo rm -rf /usr/local/bin/terraform
-#           fi
-#           sudo mv terraform /usr/local/bin/
-#           terraform --version  # Verify installation
+#           terraform init
+#         working-directory: ./terraform
 
 #       - name: Terraform Format
 #         run: |
@@ -122,157 +147,224 @@ jobs:
 #         run: |
 #           terraform show
 #         working-directory: ./terraform
+
 
 
 
 # # name: Terraform CI/CD
 
-# on:
-#   push:
-#     branches:
-#       - main
+# # on:
+# #   push:
+# #     branches:
+# #       - main
 
-# jobs:
-#   terraform:
-#     runs-on: ubuntu-latest
+# # jobs:
+# #   terraform:
+# #     runs-on: ubuntu-latest
 
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
+# #     steps:
+# #       - name: Checkout code
+# #         uses: actions/checkout@v2
 
-#       - name: Configure AWS Credentials
-#         uses: aws-actions/configure-aws-credentials@v1
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-#           aws-region: us-east-2
+# #       - name: Configure AWS Credentials
+# #         uses: aws-actions/configure-aws-credentials@v1
+# #         with:
+# #           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+# #           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+# #           aws-region: us-east-2
 
-#       - name: Set Terraform Version
-#         run: echo "TERRAFORM_VERSION=1.9.8" >> $GITHUB_ENV
+# #       - name: Install Terraform
+# #         working-directory: ./terraform  # Ensure we're in the correct directory
+# #         env:
+# #           TERRAFORM_VERSION:  "5.47.0"  # Specify the desired Terraform version here
+# #         run: |
+# #           curl -LO "https://releases.hashicorp.com/terraform/${{ env.TERRAFORM_VERSION }}/terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip"
+# #           unzip -o terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip
+# #           # Remove the old terraform binary if it exists
+# #           if [ -f /usr/local/bin/terraform ]; then
+# #             sudo rm /usr/local/bin/terraform
+# #           elif [ -d /usr/local/bin/terraform ]; then
+# #             sudo rm -rf /usr/local/bin/terraform
+# #           fi
+# #           sudo mv terraform /usr/local/bin/
+# #           terraform --version  # Verify installation
 
-#       - name: Install Terraform
-#         run: |
-#           curl -LO "https://releases.hashicorp.com/terraform/${{ env.TERRAFORM_VERSION }}/terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip"
-#           unzip -o terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip
-#           sudo mv terraform /usr/local/bin/
-#           terraform --version
+# #       - name: Terraform Format
+# #         run: |
+# #           terraform fmt -check
+# #         working-directory: ./terraform
 
-#       - name: Terraform Format
-#         run: |
-#           terraform fmt -check
-#         working-directory: ./terraform
+# #       - name: Terraform Validate
+# #         run: |
+# #           terraform validate
+# #         working-directory: ./terraform
 
-#       - name: Terraform Validate
-#         run: |
-#           terraform validate
-#         working-directory: ./terraform
+# #       - name: Terraform Plan
+# #         run: |
+# #           terraform plan
+# #         working-directory: ./terraform
 
-#       - name: Terraform Plan
-#         run: |
-#           terraform plan
-#         working-directory: ./terraform
+# #       - name: Terraform Apply
+# #         run: |
+# #           terraform apply -auto-approve
+# #         working-directory: ./terraform
+# #         continue-on-error: false  # Ensures that any failure in this step stops the workflow
 
-#       - name: Terraform Apply
-#         run: |
-#           terraform apply -auto-approve
-#         working-directory: ./terraform
-#         continue-on-error: false  # Ensures that any failure in this step stops the workflow
-
-#       - name: Output Terraform Plan
-#         run: |
-#           terraform show
-#         working-directory: ./terraform
-
-
-
-
-# name: Terraform CI/CD
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   terraform:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-
-#       - name: Configure AWS Credentials
-#         uses: aws-actions/configure-aws-credentials@v1
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-#           aws-region: us-east-2
-
-#       - name: Install Terraform
-#         run: |
-#           curl -LO "https://releases.hashicorp.com/terraform/<TERRAFORM_VERSION>/terraform_<TERRAFORM_VERSION>_linux_amd64.zip"
-#           unzip terraform_<TERRAFORM_VERSION>_linux_amd64.zip
-#           sudo mv terraform /usr/local/bin/
-
-#       - name: Terraform Format
-#         run: |
-#           terraform fmt -check
-#         working-directory: ./terraform
-
-#       - name: Terraform Validate
-#         run: |
-#           terraform validate
-#         working-directory: ./terraform
-
-#       - name: Terraform Plan
-#         run: |
-#           terraform plan
-#         working-directory: ./terraform
-
-#       - name: Terraform Apply
-#         run: |
-#           terraform apply -auto-approve
-#         working-directory: ./terraform
-#         continue-on-error: false  # Ensures that any failure in this step stops the workflow
-
-#       - name: Output Terraform Plan
-#         run: |
-#           terraform show
-#         working-directory: ./terraform
+# #       - name: Output Terraform Plan
+# #         run: |
+# #           terraform show
+# #         working-directory: ./terraform
 
 
-# name: Terraform CI/CD
 
-# on:
-#   push:
-#     branches:
-#       - main
+# # # name: Terraform CI/CD
 
-# jobs:
-#   terraform:
-#     runs-on: ubuntu-latest
+# # on:
+# #   push:
+# #     branches:
+# #       - main
 
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
+# # jobs:
+# #   terraform:
+# #     runs-on: ubuntu-latest
 
-#       - name: Configure AWS CLI
-#         uses: aws-actions/configure-aws-credentials@v1
-#         with:
-#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
-#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
-#           aws-region: <YOUR_AWS_REGION>
+# #     steps:
+# #       - name: Checkout code
+# #         uses: actions/checkout@v2
 
-#       - name: Install Terraform
-#         run: |
-#           curl -LO "https://releases.hashicorp.com/terraform/<TERRAFORM_VERSION>/terraform_<TERRAFORM_VERSION>_linux_amd64.zip"
-#           unzip terraform_<TERRAFORM_VERSION>_linux_amd64.zip
-#           sudo mv terraform /usr/local/bin/
+# #       - name: Configure AWS Credentials
+# #         uses: aws-actions/configure-aws-credentials@v1
+# #         with:
+# #           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+# #           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+# #           aws-region: us-east-2
 
-#       - name: Terraform Init
-#         working-directory: ./terraform   # Set working directory to your Terraform folder
-#         run: terraform init
+# #       - name: Set Terraform Version
+# #         run: echo "TERRAFORM_VERSION=1.9.8" >> $GITHUB_ENV
 
-#       - name: Terraform Apply
-#         working-directory: ./terraform   # Set working directory to your Terraform folder
-#         run: terraform apply -auto-approve
+# #       - name: Install Terraform
+# #         run: |
+# #           curl -LO "https://releases.hashicorp.com/terraform/${{ env.TERRAFORM_VERSION }}/terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip"
+# #           unzip -o terraform_${{ env.TERRAFORM_VERSION }}_linux_amd64.zip
+# #           sudo mv terraform /usr/local/bin/
+# #           terraform --version
+
+# #       - name: Terraform Format
+# #         run: |
+# #           terraform fmt -check
+# #         working-directory: ./terraform
+
+# #       - name: Terraform Validate
+# #         run: |
+# #           terraform validate
+# #         working-directory: ./terraform
+
+# #       - name: Terraform Plan
+# #         run: |
+# #           terraform plan
+# #         working-directory: ./terraform
+
+# #       - name: Terraform Apply
+# #         run: |
+# #           terraform apply -auto-approve
+# #         working-directory: ./terraform
+# #         continue-on-error: false  # Ensures that any failure in this step stops the workflow
+
+# #       - name: Output Terraform Plan
+# #         run: |
+# #           terraform show
+# #         working-directory: ./terraform
+
+
+
+
+# # name: Terraform CI/CD
+
+# # on:
+# #   push:
+# #     branches:
+# #       - main
+
+# # jobs:
+# #   terraform:
+# #     runs-on: ubuntu-latest
+
+# #     steps:
+# #       - name: Checkout code
+# #         uses: actions/checkout@v2
+
+# #       - name: Configure AWS Credentials
+# #         uses: aws-actions/configure-aws-credentials@v1
+# #         with:
+# #           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+# #           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+# #           aws-region: us-east-2
+
+# #       - name: Install Terraform
+# #         run: |
+# #           curl -LO "https://releases.hashicorp.com/terraform/<TERRAFORM_VERSION>/terraform_<TERRAFORM_VERSION>_linux_amd64.zip"
+# #           unzip terraform_<TERRAFORM_VERSION>_linux_amd64.zip
+# #           sudo mv terraform /usr/local/bin/
+
+# #       - name: Terraform Format
+# #         run: |
+# #           terraform fmt -check
+# #         working-directory: ./terraform
+
+# #       - name: Terraform Validate
+# #         run: |
+# #           terraform validate
+# #         working-directory: ./terraform
+
+# #       - name: Terraform Plan
+# #         run: |
+# #           terraform plan
+# #         working-directory: ./terraform
+
+# #       - name: Terraform Apply
+# #         run: |
+# #           terraform apply -auto-approve
+# #         working-directory: ./terraform
+# #         continue-on-error: false  # Ensures that any failure in this step stops the workflow
+
+# #       - name: Output Terraform Plan
+# #         run: |
+# #           terraform show
+# #         working-directory: ./terraform
+
+
+# # name: Terraform CI/CD
+
+# # on:
+# #   push:
+# #     branches:
+# #       - main
+
+# # jobs:
+# #   terraform:
+# #     runs-on: ubuntu-latest
+
+# #     steps:
+# #       - name: Checkout code
+# #         uses: actions/checkout@v2
+
+# #       - name: Configure AWS CLI
+# #         uses: aws-actions/configure-aws-credentials@v1
+# #         with:
+# #           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+# #           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+# #           aws-region: <YOUR_AWS_REGION>
+
+# #       - name: Install Terraform
+# #         run: |
+# #           curl -LO "https://releases.hashicorp.com/terraform/<TERRAFORM_VERSION>/terraform_<TERRAFORM_VERSION>_linux_amd64.zip"
+# #           unzip terraform_<TERRAFORM_VERSION>_linux_amd64.zip
+# #           sudo mv terraform /usr/local/bin/
+
+# #       - name: Terraform Init
+# #         working-directory: ./terraform   # Set working directory to your Terraform folder
+# #         run: terraform init
+
+# #       - name: Terraform Apply
+# #         working-directory: ./terraform   # Set working directory to your Terraform folder
+# #         run: terraform apply -auto-approve
