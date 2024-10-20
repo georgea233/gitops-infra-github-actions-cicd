@@ -166,7 +166,8 @@ jobs:
         run: |
           terraform destroy -auto-approve
         working-directory: ./terraform
-    #$%    
+    
+  ##Ia
 # name: Terraform CI/CD
 
 # on:
