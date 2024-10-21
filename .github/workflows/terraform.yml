@@ -352,7 +352,7 @@ jobs:
       - name: Terraform Validate
         run: |
           terraform validate
-        working-directory: ./terraform
+        working-directory: ./terraform/infra  # Make sure this points to the right folder
 
       - name: Terraform Plan
         id: plan
@@ -369,9 +369,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: tfplan
-          path: ./terraform/tfplan  # Adjust the path as necessary
+          path: ./terraform/infra/tfplan  # Upload from the correct location
 
   apply:
+    needs: terraform  # Ensure this job waits for terraform to complete
     runs-on: ubuntu-latest
     environment:
       name: production  # Specify the environment name here
@@ -394,8 +395,8 @@ jobs:
       - name: Download Terraform Plan
         uses: actions/download-artifact@v3
         with:
-          name: tfplan
-          path: ./terraform/infra  # Specify where to download the artifact
+          name: tfplan  # Ensure this matches the name used in the upload step
+          path: ./terraform/infra  # Download to the correct location
 
       - name: Terraform Init
         run: |
@@ -436,7 +437,8 @@ jobs:
       - name: Terraform Destroy
         run: |
           terraform destroy -auto-approve
-        working-directory: ./terraform/infra
+        working-directory: ./terraform/infra  # Make sure to specify the right directory
+
 
 #the above code adds artifact to the workflow and ensures that after terraform plan is created, It id saved and uploaded as an artifact and then called in the apply job to apply the plan
 
