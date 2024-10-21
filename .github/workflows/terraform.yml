@@ -342,12 +342,12 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init
-        working-directory: ./terraform
+        working-directory: ./terraform/infra
 
       - name: Terraform Format
         run: |
           terraform fmt -check
-        working-directory: ./terraform
+        working-directory: ./terraform/infra
 
       - name: Terraform Validate
         run: |
@@ -358,12 +358,12 @@ jobs:
         id: plan
         run: |
           terraform plan -out=tfplan
-        working-directory: ./terraform
+        working-directory: ./terraform/infra
 
       - name: Output Terraform Plan
         run: |
           terraform show tfplan
-        working-directory: ./terraform
+        working-directory: ./terraform/infra
 
       - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3
@@ -395,17 +395,17 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: tfplan
-          path: ./terraform  # Specify where to download the artifact
+          path: ./terraform/infra  # Specify where to download the artifact
 
       - name: Terraform Init
         run: |
           terraform init
-        working-directory: ./terraform
+        working-directory: ./terraform/infra
 
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve tfplan
-        working-directory: ./terraform
+        working-directory: ./terraform/infra
         continue-on-error: false  # Ensures that any failure in this step stops the workflow
 
   destroy:
@@ -431,12 +431,12 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init
-        working-directory: ./terraform
+        working-directory: ./terraform/infra
 
       - name: Terraform Destroy
         run: |
           terraform destroy -auto-approve
-        working-directory: ./terraform
+        working-directory: ./terraform/infra
 
 #the above code adds artifact to the workflow and ensures that after terraform plan is created, It id saved and uploaded as an artifact and then called in the apply job to apply the plan
 
