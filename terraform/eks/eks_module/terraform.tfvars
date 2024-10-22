@@ -50,3 +50,4 @@ eks_node_group_config = {
 #              "Name" =  "node1"
 #          } 
 #   }
+# }

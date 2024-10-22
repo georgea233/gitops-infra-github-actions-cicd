@@ -64,3 +64,28 @@ variable "eks_node_group_config" {
 #   default = {}
 # }
 # variable "eks_node_group_config" {
+#   default = {}
+# }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

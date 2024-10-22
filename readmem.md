@@ -38,6 +38,8 @@
     - IAM instance profile: Select the `AWS-AdministratorAccess-Role`
     - User data (Copy the following user data): <https://github.com/awanmbandi/realworld-cicd-pipeline-project/blob/terraform-jenkins-cicd-pipeline-project/installations/jenkins-install.sh>
     - Launch Instance
+    - Add the public key (id_rsa.pub) to the Jenkins server: Copy the contents of the public key (`id_rsa.pub`) and add it to the `~/.ssh/authorized_keys` file on the `Jenkins server`.
+    - Public key for Jenkins Server to be used later: `SHA256:K62j2LhfdzBg2S0r85mavz5+AuJ2lk5F1V/yiHP/zAI`. You can use ssh to do this: `ssh ubuntu@<jenkins-server-ip> nano ~/.ssh/authorized_keys` or can test this too: `ssh -i ~/.ssh/id_rsa.pub <Jenkins-Server-IP>`. Private key already added as secret in GitHub Actions Secrets under the repo `Pcommerce-Infrastructure-Code-Repo`
 
 4) SonarQube/Hashicorp Vault
     - Create a SonarQube/Hashicorp Vault `Ubuntu 22.04` VM instance
