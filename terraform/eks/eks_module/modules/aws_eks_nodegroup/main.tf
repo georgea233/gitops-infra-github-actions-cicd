@@ -21,7 +21,7 @@ resource "aws_eks_node_group" "nodes_general" {
     desired_size = 2
 
     # Maximum number of worker nodes.
-    max_size = 2
+    max_size = 4
 
     # Minimum number of worker nodes.
     min_size = 2

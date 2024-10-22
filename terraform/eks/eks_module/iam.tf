@@ -23,8 +23,8 @@ resource "aws_iam_policy" "eks_cluster_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect   = "Allow"
-        Action   = [
+        Effect = "Allow"
+        Action = [
           "eks:CreateCluster",
           "eks:DescribeCluster",
           "eks:UpdateClusterConfig",
@@ -47,7 +47,7 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy_attachment" {
 
 data "aws_iam_policy_document" "ec2_assume_role_policy" {
   statement {
-    actions = ["sts:AssumeRole"]    
+    actions = ["sts:AssumeRole"]
 
     principals {
       type        = "Service"

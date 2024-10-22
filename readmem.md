@@ -142,7 +142,18 @@ sudo systemctl status artifactory
 
 ```
 
-5) Install Plugins
+```
+# Done with Installation, Now will we Configure each the tools
+## Step: 2 Configure Individual tool
+
+### Stage-01 : Jenkins Configuration
+1. go to Manage Jenkins > configure tools > go to maven> give some name and click on install automatically
+2. go to Manage Jenkins > configure tools > go to sonarqube scanner > give some name and click on install automatically 
+
+### Stage-02: Hashicorp Vault Configuration
+```
+
+8) Install Plugins
 
 - Snyk
 - Slack
