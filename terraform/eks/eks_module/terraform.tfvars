@@ -1,4 +1,4 @@
-aws_profile = "george"
+# aws_profile = "george"
 aws_region  = "us-east-2"
 
 aws_eks_cluster_config = {
