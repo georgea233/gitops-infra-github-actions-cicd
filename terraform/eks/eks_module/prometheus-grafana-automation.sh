@@ -18,7 +18,7 @@ helm repo update
 # Search for available Prometheus charts
 echo "Searching for Prometheus charts..."
 helm search repo prometheus-community
-
+##44
 # Create a namespace for Prometheus
 echo "Creating namespace for Prometheus..."
 kubectl create namespace prometheus

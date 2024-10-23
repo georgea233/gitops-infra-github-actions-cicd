@@ -11,7 +11,7 @@ data "aws_subnets" "selected" {
     name   = "vpc-id"
     values = ["${data.aws_vpc.default.id}"]
   }
-} 
+}
 
 # variable "access_key" {
 #   default = ""
